@@ -25,7 +25,7 @@ export function LastMatchResult({
     score: [6, 4, 7]
   },
   player2 = {
-    name: "Juan Diaz y Pablo Cuevas",
+    name: "Juan Rodriguez y Matias Martinez",
     country: "ARG",
     score: [1, 6, 4]
   },
