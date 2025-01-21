@@ -39,13 +39,13 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: "Mis Reservas",
+      title: "Calendario de partidos",
       url: userId ? `/my-bookings?userId=${userId}` : '/my-bookings',
       icon: Calendar,
     },
     {
-      title: "Reservar una cancha",
-      url: "/book",
+      title: "Tabla de posiciones",
+      url: "/standings",
       icon: LandPlot,
     },
     {
@@ -78,7 +78,7 @@ export function AppSidebar() {
             width={40}
             height={40}
           />
-          <span className="font-semibold text-lg">Padel Manager</span>
+          <span className="font-semibold text-lg">Rackets Calendar</span>
         </div>
       </SidebarHeader>
       
