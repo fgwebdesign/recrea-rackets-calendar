@@ -19,7 +19,6 @@ interface WelcomeBannerProps {
 
 export function WelcomeBanner({ 
   userName, 
-  notificationCount = 0, 
   avatarUrl,
   email 
 }: WelcomeBannerProps) {
@@ -69,9 +68,7 @@ export function WelcomeBanner({
             <h1 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
               ¡Hola 👋 {userName}!
             </h1>
-            <p className="text-blue-50/90">
-              Gestiona tus reservas y disfruta del mejor pádel
-            </p>
+         
           </div>
         </div>
       

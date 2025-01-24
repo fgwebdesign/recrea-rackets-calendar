@@ -1,5 +1,5 @@
 "use client"
-import { Home, Calendar, PlusSquare, Trophy } from 'lucide-react';
+import { Home, Calendar, PlusSquare, Trophy, LayoutDashboard, LineChart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -25,11 +25,10 @@ export function BottomNav() {
   const navigation = useMemo(() => [
     { name: 'Inicio', href: '/dashboard', icon: Home },
     { 
-      name: 'Mis Reservas', 
-      href: user?.id ? `/my-bookings?userId=${user.id}` : '/my-bookings', 
+      name: 'Mis Partidos', 
+      href: user?.id ? `/my-matches?userId=${user.id}` : '/my-matches', 
       icon: Calendar 
     },
-    { name: 'Reservar', href: '/book', icon: PlusSquare },
     { name: 'Torneos', href: '/tournaments', icon: Trophy },
     { 
       name: 'Perfil',

@@ -6,16 +6,18 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
     name: "Torneo de Verano 2024",
     startDate: "2024-07-15",
     endDate: "2024-07-20",
-    categories: ["Primera", "Segunda", "Tercera"],
+    categories: ["Cuarta", "Quinta", "Sexta", "Séptima"],
     availableSpots: {
-      "Primera": 8,
-      "Segunda": 12,
-      "Tercera": 6
+      "Cuarta": 8,
+      "Quinta": 12,
+      "Sexta": 6,
+      "Séptima": 8
     },
     totalTeams: {
-      "Primera": 16,
-      "Segunda": 16,
-      "Tercera": 8
+      "Cuarta": 16,
+      "Quinta": 16,
+      "Sexta": 8,
+      "Séptima": 8
     },
     registrationDeadline: "2024-07-01",
     price: 50,
@@ -68,11 +70,11 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
         events: [
           {
             time: "09:00",
-            description: "Inicio fase de grupos - Primera"
+            description: "Inicio fase de grupos - Cuarta"
           },
           {
             time: "14:00",
-            description: "Inicio fase de grupos - Segunda"
+            description: "Inicio fase de grupos - Quinta"
           }
         ]
       }
@@ -179,14 +181,16 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
     name: "Torneo Metropolitano",
     startDate: "2024-10-20",
     endDate: "2024-10-25",
-    categories: ["Primera", "Segunda"],
+    categories: ["Quinta", "Sexta", "Séptima"],
     availableSpots: {
-      "Primera": 6,
-      "Segunda": 10
+      "Quinta": 6,
+      "Sexta": 10,
+      "Séptima": 8
     },
     totalTeams: {
-      "Primera": 12,
-      "Segunda": 16
+      "Quinta": 12,
+      "Sexta": 16,
+      "Séptima": 12
     },
     registrationDeadline: "2024-10-05",
     price: 60,
@@ -252,166 +256,6 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
       "Servicio de fisioterapia",
       "Análisis de video",
       "Alojamiento incluido"
-    ]
-  },
-  {
-    id: 4,
-    name: "Copa Elite",
-    startDate: "2024-11-05",
-    endDate: "2024-11-10",
-    categories: ["Primera Elite"],
-    availableSpots: {
-      "Primera Elite": 4
-    },
-    totalTeams: {
-      "Primera Elite": 8
-    },
-    registrationDeadline: "2024-10-20",
-    price: 100,
-    status: "open",
-    image: "/assets/canchapadel.jpeg",
-    location: "Elite Padel Club",
-    format: "Round Robin + Final Four",
-    matchDuration: "2 horas",
-    teamsPerCategory: 8,
-    description: "Torneo exclusivo para los mejores jugadores del circuito. Solo 8 parejas, premios excepcionales.",
-    rules: [
-      "Todos contra todos",
-      "Los 4 mejores a semifinales",
-      "Partidos televisados",
-      "Arbitraje profesional"
-    ],
-    sponsors: [
-      {
-        name: "Rolex",
-        logo: "/assets/sponsors/rolex.svg",
-        website: "https://www.rolex.com",
-        tier: "platinum"
-      }
-    ],
-    venue: {
-      name: "Elite Padel Club",
-      address: "Av. Luxury 123",
-      coordinates: {
-        lat: -34.5737,
-        lng: -58.4116
-      },
-      facilities: [
-        "Cancha central con gradas",
-        "Vestuarios VIP",
-        "Lounge exclusivo",
-        "Helipuerto"
-      ],
-      parkingAvailable: true
-    },
-    schedule: [
-      {
-        date: "2024-11-05",
-        events: [
-          {
-            time: "18:00",
-            description: "Gala inaugural"
-          }
-        ]
-      }
-    ],
-    organizer: {
-      name: "Elite Padel Association",
-      contact: "vip@elitepadel.com",
-      logo: "/assets/organizers/elite.png"
-    },
-    prizes: {
-      firstPlace: "Trofeo + $500.000",
-      secondPlace: "Trofeo + $250.000",
-      thirdPlace: "Trofeo + $125.000"
-    },
-    benefits: [
-      "Alojamiento 5 estrellas",
-      "Transporte privado",
-      "Equipamiento completo",
-      "Cobertura mediática"
-    ]
-  },
-  {
-    id: 5,
-    name: "Torneo Amateur",
-    startDate: "2024-12-01",
-    endDate: "2024-12-03",
-    categories: ["Quinta", "Sexta", "Séptima"],
-    availableSpots: {
-      "Quinta": 16,
-      "Sexta": 16,
-      "Séptima": 16
-    },
-    totalTeams: {
-      "Quinta": 32,
-      "Sexta": 32,
-      "Séptima": 32
-    },
-    registrationDeadline: "2024-11-15",
-    price: 30,
-    status: "open",
-    image: "/assets/canchapadel.jpeg",
-    location: "Club Social y Deportivo",
-    format: "Eliminación directa",
-    matchDuration: "1 hora",
-    teamsPerCategory: 32,
-    description: "Torneo pensado para jugadores amateur que quieren iniciarse en la competición.",
-    rules: [
-      "Un set a 9 juegos",
-      "Punto de oro",
-      "Auto-arbitraje",
-      "Espíritu deportivo"
-    ],
-    sponsors: [
-      {
-        name: "Deportes Local",
-        logo: "/assets/sponsors/local.svg",
-        website: "https://www.deporteslocal.com",
-        tier: "gold"
-      }
-    ],
-    venue: {
-      name: "Club Social y Deportivo",
-      address: "Calle del Deporte 456",
-      coordinates: {
-        lat: -34.6337,
-        lng: -58.4316
-      },
-      facilities: [
-        "4 canchas",
-        "Vestuarios",
-        "Cantina",
-        "Estacionamiento"
-      ],
-      parkingAvailable: true
-    },
-    schedule: [
-      {
-        date: "2024-12-01",
-        events: [
-          {
-            time: "09:00",
-            description: "Inicio del torneo"
-          }
-        ]
-      }
-    ],
-    organizer: {
-      name: "Club Social y Deportivo",
-      contact: "deportes@clubsocial.com",
-      logo: "/assets/organizers/social.png"
-    },
-    prizes: {
-      firstPlace: "Trofeo + $30.000",
-      secondPlace: "Trofeo + $15.000",
-      thirdPlace: "Trofeo + $7.500"
-    },
-    benefits: [
-      "Camiseta del torneo",
-      "Hidratación",
-      "Frutas",
-      "Foto grupal"
     ]
   }
 ] 

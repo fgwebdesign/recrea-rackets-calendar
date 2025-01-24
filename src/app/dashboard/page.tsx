@@ -9,14 +9,17 @@ import { WeatherWidget } from "@/components/dashboard/WeatherWidget";
 import { supabase } from '@/lib/supabase';
 import { User } from "@supabase/supabase-js";
 import { BottomNav } from "@/components/navigation/BottomNav";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonWelcomeBanner } from "@/components/dashboard/skeletons/SkeletonWelcomeBanner";
 import { SkeletonQuickActions } from "@/components/dashboard/skeletons/SkeletonQuickActions";
-import { SkeletonWeatherWidget } from "@/components/dashboard/skeletons/SkeletonWeatherWidget";
 import { TournamentBanner } from "@/components/dashboard/TournamentBanner"
 import { LastMatchResult } from "@/components/dashboard/LastMatchResult";
 import { LeagueStandings } from "@/components/dashboard/LeagueStandings";
 import { mockLeagueStandings } from '@/mocks/leagueStandings';
 import { NextMatch } from "@/components/dashboard/NextMatch";
+import { SkeletonLastMatchResult } from "@/components/dashboard/skeletons/SkeletonLastMatchResult";
+import { SkeletonNextMatch } from "@/components/dashboard/skeletons/SkeletonNextMatch";
+import { SkeletonTournamentBanner } from "@/components/dashboard/skeletons/SkeletonTournamentBanner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -51,15 +54,21 @@ export default function DashboardPage() {
               <>
                 <SkeletonWelcomeBanner />
                 <SkeletonQuickActions />
-                <div className="w-full h-[300px] bg-gray-100 rounded-2xl mb-8 animate-pulse" />
+                <SkeletonTournamentBanner />
                 
-                {/* Desktop: Grid layout Skeleton */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                  <div className="lg:col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="h-full flex flex-col">
+                    <Skeleton className="h-8 w-48 mb-4" />
+                    <SkeletonLastMatchResult />
                   </div>
-                  <div className="block">
-                    <SkeletonWeatherWidget />
+                  <div className="h-full flex flex-col">
+                    <Skeleton className="h-8 w-48 mb-4" />
+                    <SkeletonNextMatch />
                   </div>
+                </div>
+
+                <div className="w-full">
+                  <Skeleton className="h-[400px] rounded-2xl" />
                 </div>
               </>
             ) : (
@@ -106,6 +115,7 @@ export default function DashboardPage() {
                     category={mockLeagueStandings.category}
                     division={mockLeagueStandings.division}
                     standings={mockLeagueStandings.standings}
+                    showViewAllButton={true}
                   />
                 </div>
                    {/* WeatherWidget en una fila completa */}
