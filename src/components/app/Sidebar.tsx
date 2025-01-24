@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Calendar, Home, CircleUser, LandPlot, LogOut, ChevronsUpDown, Trophy } from "lucide-react"
+import { Calendar, Home, CircleUser, LandPlot, LogOut, ChevronsUpDown, Trophy, LayoutDashboard, LineChart } from "lucide-react"
 import { User } from '@supabase/supabase-js'
 import {
   Sidebar,
@@ -32,27 +32,27 @@ export function AppSidebar() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
 
-  const getMenuItems = (userId: string | undefined) => [
+  const links = [
     {
-      title: "Inicio",
-      url: "/dashboard",
-      icon: Home,
+      title: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard
     },
     {
-      title: "Calendario de partidos",
-      url: userId ? `/my-bookings?userId=${userId}` : '/my-bookings',
-      icon: Calendar,
-    },
-    {
-      title: "Tabla de posiciones",
-      url: "/standings",
-      icon: LandPlot,
+      title: "Mis Partidos",
+      href: "/my-matches",
+      icon: Calendar
     },
     {
       title: "Torneos",
-      url: "/tournaments",
-      icon: Trophy,
+      href: "/tournaments",
+      icon: Trophy
     },
+    {
+      title: "Posiciones",
+      href: "/standings",
+      icon: LineChart
+    }
   ]
 
   useEffect(() => {
@@ -86,10 +86,10 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarMenu>
-            {getMenuItems(user?.id).map((item) => (
+            {links.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
-                  <Link href={item.url}>
+                  <Link href={item.href}>
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
                   </Link>

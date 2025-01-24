@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LeagueStandings } from "@/components/dashboard/LeagueStandings";
 import { mockLeagueStandings } from "@/mocks/leagueStandings";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/Sidebar";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { FeaturedTeam } from "@/components/standings/FeaturedTeam";
-import { TeamStats } from "@/components/standings/TeamStats";
 import { CategoryFilter } from "@/components/standings/CategoryFilter";
+import { SkeletonCategoryFilter } from "@/components/standings/skeletons/SkeletonCategoryFilter";
+import { SkeletonStandingsTable } from "@/components/standings/skeletons/SkeletonStandingsTable";
 
 const categories = [
   "Categoría Cuarta",
@@ -19,8 +19,18 @@ const categories = [
 
 export default function StandingsPage() {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const [loading, setLoading] = useState(true);
 
-  // Aquí podrías filtrar los datos según la categoría seleccionada
+  useEffect(() => {
+    // Simulamos carga de datos
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Filtrar los datos según la categoría seleccionada
   const filteredStandings = {
     ...mockLeagueStandings,
     category: selectedCategory
@@ -39,40 +49,29 @@ export default function StandingsPage() {
               </p>
             </div>
 
-            {/* Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <FeaturedTeam 
-                players={[
-                  { name: "Felipe Gutierrez" },
-                  { name: "Francisco Erramuspe" }
-                ]}
-                position={1}
-                category={selectedCategory}
-              />
-              <TeamStats 
-                stats={{
-                  played: 8,
-                  won: 7,
-                  lost: 1
-                }}
-              />
-            </div>
-
-            {/* Category Filter */}
-            <CategoryFilter
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-
-            {/* League Standings Table */}
-            <div className="space-y-8">
-              <LeagueStandings 
-                category={filteredStandings.category}
-                division={filteredStandings.division}
-                standings={filteredStandings.standings}
-              />
-            </div>
+            {loading ? (
+              <>
+                <SkeletonCategoryFilter />
+                <div className="mt-6">
+                  <SkeletonStandingsTable />
+                </div>
+              </>
+            ) : (
+              <>
+                <CategoryFilter
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+                <div className="mt-6">
+                  <LeagueStandings 
+                    category={filteredStandings.category}
+                    division={filteredStandings.division}
+                    standings={filteredStandings.standings}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </main>
         <BottomNav />
