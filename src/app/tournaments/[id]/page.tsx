@@ -269,30 +269,6 @@ export default function TournamentDetailPage() {
                     </div>
                   </div>
                 </section>
-
-                {/* Organizador */}
-                <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h3 className="font-semibold mb-4">Organizador</h3>
-                  <div className="flex items-center gap-4 mb-4">
-                    {tournament.organizer.logo && (
-                      <Image
-                        src={tournament.organizer.logo}
-                        alt={tournament.organizer.name}
-                        width={48}
-                        height={48}
-                        className="rounded-lg"
-                      />
-                    )}
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {tournament.organizer.name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {tournament.organizer.contact}
-                      </div>
-                    </div>
-                  </div>
-                </section>
               </div>
             </div>
           </div>
