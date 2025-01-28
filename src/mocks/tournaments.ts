@@ -3,9 +3,9 @@ import { Tournament } from "@/types/tournament"
 export const MOCK_TOURNAMENTS: Tournament[] = [
   {
     id: 1,
-    name: "Torneo de Verano 2024",
-    startDate: "2024-07-15",
-    endDate: "2024-07-20",
+    name: "Torneo de Verano 2025",
+    startDate: "2025-07-15",
+    endDate: "2025-07-20",
     categories: ["Cuarta", "Quinta", "Sexta", "Séptima"],
     availableSpots: {
       "Cuarta": 8,
@@ -19,15 +19,15 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
       "Sexta": 8,
       "Séptima": 8
     },
-    registrationDeadline: "2024-07-01",
-    price: 50,
+    registrationDeadline: "2025-07-01",
+    price: 3000,
     status: "open",
     image: "/assets/canchapadel.jpeg",
-    location: "Club de Pádel Central",
+    location: "Recrea Pádel",
     format: "Fase de grupos + eliminatorias",
     matchDuration: "1 hora y media",
     teamsPerCategory: 16,
-    description: "El Torneo de Verano 2024 es el evento más esperado de la temporada. Con las mejores instalaciones y un formato que garantiza partidos emocionantes.",
+    description: "El Torneo de Verano 2025 es el evento más esperado de la temporada. Con las mejores instalaciones y un formato que garantiza partidos emocionantes.",
     rules: [
       "Los partidos se jugarán al mejor de 3 sets con tie-break",
       "Cada equipo debe presentarse 15 minutos antes",
@@ -37,16 +37,16 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
     ],
     sponsors: [
       {
-        name: "Head",
-        logo: "/assets/sponsors/head.svg",
-        website: "https://www.head.com",
+        name: "Gatorade",
+        logo: "/assets/logogatorade.png",
+        website: "https://www.gatorade.com",
         tier: "platinum"
       },
       {
-        name: "Gatorade",
-        logo: "/assets/sponsors/gatorade.svg",
-        website: "https://www.gatorade.com",
-        tier: "gold"
+        name: "Head",
+        logo: "/assets/logohead.png",
+        website: "https://www.head.com",
+        tier: "platinum"
       }
     ],
     venue: {
@@ -66,7 +66,7 @@ export const MOCK_TOURNAMENTS: Tournament[] = [
     },
     schedule: [
       {
-        date: "2024-07-15",
+        date: "2025-07-15",
         events: [
           {
             time: "09:00",
