@@ -1,16 +1,15 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { Trophy, MapPin, Calendar, Clock, Users, ChevronLeft, ExternalLink, Car, Info } from "lucide-react"
+import { Trophy, MapPin, Calendar, ChevronLeft, Car, Info, Medal, ArrowRight, AlertCircle } from "lucide-react"
 import { AppSidebar } from "@/components/app/Sidebar"
 import { BottomNav } from "@/components/navigation/BottomNav"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import Image from "next/image"
-import Link from "next/link"
+import { DownloadRulesButton } from "@/components/tournaments/DownloadRulesButton"
 
 // Temporal: Usaremos los datos de ejemplo hasta que tengamos la API
 import { MOCK_TOURNAMENTS } from "@/mocks/tournaments"
@@ -45,23 +44,53 @@ export default function TournamentDetailPage() {
             
             {/* Contenido del banner */}
             <div className="absolute bottom-0 w-full p-6 md:p-8">
-              <Button
-                variant="ghost"
-                className="text-white mb-4 hover:bg-white/10"
-                onClick={() => router.back()} 
-              >
-                <ChevronLeft className="w-5 h-5 mr-2" />
-                Volver a Torneos
-              </Button>
-              <h1 className="text-3xl font-bold text-white mb-2">{tournament.name}</h1>
-              <div className="flex items-center gap-4 text-white/90">
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>{formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}</span>
+              <div className="flex justify-between items-end">
+                {/* Información del torneo */}
+                <div>
+                  <h1 className="text-3xl font-bold text-white mb-2">{tournament.name}</h1>
+                  <div className="flex items-center gap-4 text-white/90">
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>{formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>{tournament.location}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>{tournament.location}</span>
+
+                {/* Sponsors */}
+                <div className="hidden md:block">
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-white/80 text-sm font-medium">
+                      Patrocinado por
+                    </span>
+                    <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl">
+                      {tournament.sponsors
+                        .filter(sponsor => sponsor.tier === 'platinum' || sponsor.tier === 'gold')
+                        .slice(0, 3)
+                        .map((sponsor, index) => (
+                          <a
+                            key={index}
+                            href={sponsor.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative"
+                          >
+                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300" />
+                            <Image
+                              src={sponsor.logo}
+                              alt={sponsor.name}
+                              width={90}
+                              height={45}
+                              className="object-contain transition-transform duration-300 group-hover:scale-105"
+                              priority
+                            />
+                          </a>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -72,6 +101,15 @@ export default function TournamentDetailPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6 md:space-y-8">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  onClick={() => router.back()}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  Volver a Torneos
+                </Button>
+
                 {/* Descripción */}
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
                   <h2 className="text-xl font-semibold mb-4">Acerca del torneo</h2>
@@ -80,26 +118,51 @@ export default function TournamentDetailPage() {
 
                 {/* Premios */}
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold mb-4">Premios</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-yellow-50 rounded-xl p-4">
-                      <div className="text-yellow-600 font-medium mb-1">1° Lugar</div>
-                      <div className="text-gray-700">{tournament.prizes.firstPlace}</div>
+                  <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                    <Trophy className="h-6 w-6 text-yellow-500" />
+                    Premios
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="relative bg-gradient-to-br from-yellow-50 to-yellow-100/50 rounded-xl p-6 border border-yellow-200">
+                      <div className="absolute -top-4 right-4">
+                        <Trophy className="h-8 w-8 text-yellow-500" />
+                      </div>
+                      <div className="text-yellow-600 font-semibold mb-2 text-lg">1° Lugar</div>
+                      <div className="text-gray-700 font-medium">{tournament.prizes.firstPlace}</div>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <div className="text-gray-600 font-medium mb-1">2° Lugar</div>
-                      <div className="text-gray-700">{tournament.prizes.secondPlace}</div>
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-6 border border-gray-200">
+                      <div className="absolute -top-4 right-4">
+                        <Medal className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <div className="text-gray-600 font-semibold mb-2 text-lg">2° Lugar</div>
+                      <div className="text-gray-700 font-medium">{tournament.prizes.secondPlace}</div>
                     </div>
-                    <div className="bg-orange-50 rounded-xl p-4">
-                      <div className="text-orange-600 font-medium mb-1">3° Lugar</div>
-                      <div className="text-gray-700">{tournament.prizes.thirdPlace}</div>
+                    <div className="relative bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl p-6 border border-orange-200">
+                      <div className="absolute -top-4 right-4">
+                        <Medal className="h-8 w-8 text-orange-500" />
+                      </div>
+                      <div className="text-orange-600 font-semibold mb-2 text-lg">3° Lugar</div>
+                      <div className="text-gray-700 font-medium">{tournament.prizes.thirdPlace}</div>
                     </div>
                   </div>
                 </section>
 
                 {/* Reglamento */}
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold mb-4">Reglamento</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold">Reglamento</h2>
+                    <DownloadRulesButton
+                      tournamentName={tournament.name}
+                      rules={tournament.rules}
+                      organizerName={tournament.organizer.name}
+                      sponsors={tournament.sponsors}
+                      startDate={tournament.startDate}
+                      endDate={tournament.endDate}
+                      location={tournament.location}
+                      format={tournament.format}
+                      venue={tournament.venue}
+                    />
+                  </div>
                   <ul className="space-y-2">
                     {tournament.rules.map((rule, index) => (
                       <li key={index} className="flex gap-2 text-gray-600">
@@ -115,19 +178,60 @@ export default function TournamentDetailPage() {
               <div className="space-y-6">
                 {/* Inscripción */}
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-2xl font-bold">${tournament.price}</h3>
-                    <span className="text-gray-500">por equipo</span>
+                  <div className="space-y-6">
+                    {/* Precio y estado */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-3xl font-bold text-blue-600">${tournament.price}</div>
+                        <div className="text-gray-500 text-sm">por equipo</div>
+                      </div>
+                      <div className="bg-green-100 px-4 py-2 rounded-full">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                          <span className="text-green-700 text-sm font-medium">Inscripciones abiertas</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Información importante */}
+                    <div className="space-y-4 py-4 border-y border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-50 p-2 rounded-lg">
+                          <Calendar className="h-5 w-5 text-blue-500" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Fecha límite de inscripción</div>
+                          <div className="font-medium">{formatDate(tournament.registrationDeadline)}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-50 p-2 rounded-lg">
+                          <Info className="h-5 w-5 text-blue-500" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Formato del torneo</div>
+                          <div className="font-medium">{tournament.format}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botón de inscripción */}
+                    <Button 
+                      className="w-full h-12 text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all duration-300 hover:scale-[1.02] group"
+                      onClick={() => router.push(`/tournaments/${tournament.id}/register`)}
+                    >
+                      Inscribirse ahora
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+
+                    {/* Nota informativa */}
+                    <div className="flex items-start gap-2 text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                      <p>
+                        Al inscribirte aceptas el reglamento del torneo y las políticas de participación.
+                      </p>
+                    </div>
                   </div>
-                  <Button 
-                    className="w-full mb-4"
-                    onClick={() => router.push(`/tournaments/${tournament.id}/register`)}
-                  >
-                    Inscribirse ahora
-                  </Button>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Fecha límite de inscripción: {formatDate(tournament.registrationDeadline)}
-                  </p>
                 </section>
 
                 {/* Sede */}
@@ -163,71 +267,6 @@ export default function TournamentDetailPage() {
                         ))}
                       </div>
                     </div>
-                  </div>
-                </section>
-
-                {/* Organizador */}
-                <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h3 className="font-semibold mb-4">Organizador</h3>
-                  <div className="flex items-center gap-4 mb-4">
-                    {tournament.organizer.logo && (
-                      <Image
-                        src={tournament.organizer.logo}
-                        alt={tournament.organizer.name}
-                        width={48}
-                        height={48}
-                        className="rounded-lg"
-                      />
-                    )}
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {tournament.organizer.name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {tournament.organizer.contact}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Sponsors */}
-                <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h3 className="font-semibold mb-4">Sponsors</h3>
-                  <div className="space-y-6">
-                    {["platinum", "gold", "silver", "bronze"].map((tier) => {
-                      const tierSponsors = tournament.sponsors.filter(s => s.tier === tier)
-                      if (tierSponsors.length === 0) return null
-
-                      return (
-                        <div key={tier}>
-                          <div className="text-sm font-medium text-gray-500 mb-3 capitalize">
-                            {tier}
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            {tierSponsors.map((sponsor, index) => (
-                              <a
-                                key={index}
-                                href={sponsor.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group relative bg-gray-50 rounded-lg p-4 flex items-center justify-center transition-colors hover:bg-gray-100"
-                              >
-                                <Image
-                                  src={sponsor.logo}
-                                  alt={sponsor.name}
-                                  width={100}
-                                  height={40}
-                                  className="object-contain"
-                                />
-                                {sponsor.website && (
-                                  <ExternalLink className="absolute bottom-2 right-2 h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                )}
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )
-                    })}
                   </div>
                 </section>
               </div>

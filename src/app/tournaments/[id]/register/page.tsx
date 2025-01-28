@@ -16,11 +16,11 @@ import { TournamentBanner } from '@/components/tournaments/registration/Tourname
 import { SidebarProvider } from '@/components/ui/sidebar'
 
 interface FormData {
-  teamName: string;
+  partnerId: number | null;
+  partnerName: string | null;
   category: string;
-  players: string[];
-  captain: number | null;
   paymentMethod: string;
+  registrationStatus: string;
 }
 
 export default function TournamentRegistrationPage() {
@@ -28,11 +28,11 @@ export default function TournamentRegistrationPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
-    teamName: '',
+    partnerId: null,
+    partnerName: null,
     category: '',
-    players: [],
-    captain: null,
-    paymentMethod: ''
+    paymentMethod: '',
+    registrationStatus: 'pending'
   })
 
   const tournament = MOCK_TOURNAMENTS.find(t => t.id === Number(params.id))
@@ -44,9 +44,8 @@ export default function TournamentRegistrationPage() {
   const steps = [
     { id: 1, name: 'Información del Equipo' },
     { id: 2, name: 'Categoría' },
-    { id: 3, name: 'Jugadores' },
-    { id: 4, name: 'Pago' },
-    { id: 5, name: 'Confirmación' }
+    { id: 3, name: 'Pago' },
+    { id: 4, name: 'Confirmación' }
   ]
 
   const progress = (currentStep / steps.length) * 100
@@ -115,14 +114,6 @@ export default function TournamentRegistrationPage() {
                   />
                 )}
                 {currentStep === 3 && (
-                  <PlayersStep
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onNext={handleNext}
-                    onBack={handleBack}
-                  />
-                )}
-                {currentStep === 4 && (
                   <PaymentStep
                     tournament={tournament}
                     formData={formData}
@@ -131,7 +122,7 @@ export default function TournamentRegistrationPage() {
                     onBack={handleBack}
                   />
                 )}
-                {currentStep === 5 && (
+                {currentStep === 4 && (
                   <ConfirmationStep
                     tournament={tournament}
                     formData={formData}
