@@ -1,19 +1,20 @@
 import { Flag, Trophy } from 'lucide-react';
 
 interface LastMatchResultProps {
-  tournament: string;
-  category: string;
-  player1: {
+  tournament?: string;
+  category?: string;
+  player1?: {
     name: string;
     country: string;
     score: number[];
   };
-  player2: {
+  player2?: {
     name: string;
     country: string;
     score: number[];
   };
   isCompleted?: boolean;
+  hasMatch?: boolean;
 }
 
 export function LastMatchResult({
@@ -29,8 +30,21 @@ export function LastMatchResult({
     country: "ARG",
     score: [1, 6, 4]
   },
-  isCompleted = true
+  isCompleted = true,
+  hasMatch = false
 }: LastMatchResultProps) {
+  if (!hasMatch) {
+    return (
+      <div className="bg-[#4B83F2] rounded-3xl shadow-sm p-6 text-white h-full flex flex-col items-center justify-center text-center">
+        <Trophy className="w-12 h-12 text-blue-100 mb-3" />
+        <h3 className="text-xl font-medium mb-2">Sin partidos jugados</h3>
+        <p className="text-blue-100">
+          Aún no has disputado ningún partido. ¡Inscríbete en un torneo para comenzar!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#4B83F2] rounded-3xl shadow-sm p-6 text-white h-full">
       <div className="flex items-center justify-between mb-4">

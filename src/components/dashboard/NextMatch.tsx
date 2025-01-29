@@ -1,13 +1,14 @@
 import { Calendar, Clock, MapPin, Trophy, LandPlot} from 'lucide-react';
 
 interface NextMatchProps {
-  date: string;
-  opponent: string;
-  location: string;
-  time: string;
-  category: string;
-  tournament: string;
-  court: string;
+  date?: string;
+  opponent?: string;
+  location?: string;
+  time?: string;
+  category?: string;
+  tournament?: string;
+  court?: string;
+  hasMatch?: boolean;
 }
 
 export function NextMatch({
@@ -17,8 +18,21 @@ export function NextMatch({
   time = "20:00",
   category = "Categoría Quinta",
   tournament = "Liga Nocturna Recrea",
-  court = "Cancha 2"
+  court = "Cancha 2",
+  hasMatch = false
 }: NextMatchProps) {
+  if (!hasMatch) {
+    return (
+      <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl shadow-sm p-6 text-white h-full flex flex-col items-center justify-center text-center">
+        <Calendar className="w-12 h-12 text-green-100 mb-3" />
+        <h3 className="text-xl font-medium mb-2">Sin próximos partidos</h3>
+        <p className="text-green-100">
+          No tienes partidos programados. ¡Reserva una cancha o inscríbete en un torneo!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl shadow-sm p-6 text-white h-full">
       <div className="flex items-center justify-between mb-4">

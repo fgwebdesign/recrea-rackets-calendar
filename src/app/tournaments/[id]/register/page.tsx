@@ -66,7 +66,7 @@ export default function TournamentRegistrationPage() {
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-50 w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-x-hidden w-full">
+        <main className="flex-1 w-full overflow-hidden">
           <div className="max-w-3xl mx-auto px-4 py-8">
             {/* Header */}
             <div className="mb-8">
