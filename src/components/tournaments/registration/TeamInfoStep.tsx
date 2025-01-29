@@ -46,27 +46,25 @@ export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepP
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
+      className="h-full flex flex-col"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
         <div>
           <label className="block text-base font-medium text-gray-900 mb-4">
             Selecciona tu compañero de equipo
           </label>
+          <Input
+            type="text"
+            placeholder="Buscar jugador..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="mb-4"
+          />
+        </div>
 
-          {/* Barra de búsqueda */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Buscar jugador..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Lista de usuarios con scroll */}
-          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50">
+        {/* Lista de usuarios con scroll */}
+        <div className="h-[330px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50">
+          <div className="space-y-3">
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
@@ -101,14 +99,14 @@ export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepP
               </div>
             )}
           </div>
-
-          {error && (
-            <p className="mt-2 text-sm text-red-500">{error}</p>
-          )}
         </div>
 
-        <div className="flex justify-end">
-          <Button type="submit">
+        {error && (
+          <p className="text-sm text-red-600 mt-4">{error}</p>
+        )}
+
+        <div className="mt-6 flex justify-end">
+          <Button type="submit" disabled={!selectedPartnerId}>
             Siguiente
           </Button>
         </div>
