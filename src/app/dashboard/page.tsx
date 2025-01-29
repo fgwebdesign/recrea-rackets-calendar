@@ -90,7 +90,7 @@ export default function DashboardPage() {
                       Último partido disputado
                     </h2>
                     <div className="flex-1">
-                      <LastMatchResult />
+                      <LastMatchResult hasMatch={false} />
                     </div>
                   </div>
                   <div className="h-full flex flex-col">
@@ -98,13 +98,7 @@ export default function DashboardPage() {
                       Próximo Partido
                     </h2>
                     <div className="flex-1">
-                      <NextMatch 
-                        date="14 de Julio"
-                        opponent="Diaz/Cuevas"
-                        location="Club de Pádel Central"
-                        time="20:00"
-                        category="Categoría Quinta"
-                      />
+                      <NextMatch hasMatch={false} />
                     </div>
                   </div>
                 </div>
@@ -114,7 +108,7 @@ export default function DashboardPage() {
                   <LeagueStandings 
                     category={mockLeagueStandings.category}
                     division={mockLeagueStandings.division}
-                    standings={mockLeagueStandings.standings}
+                    standings={[]}
                     showViewAllButton={true}
                   />
                 </div>
