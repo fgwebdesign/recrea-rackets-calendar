@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { LeagueStandings } from "@/components/dashboard/LeagueStandings";
 import { mockLeagueStandings } from "@/mocks/leagueStandings";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -9,26 +8,16 @@ import { BottomNav } from "@/components/navigation/BottomNav";
 import { CategoryFilter } from "@/components/standings/CategoryFilter";
 import { SkeletonCategoryFilter } from "@/components/standings/skeletons/SkeletonCategoryFilter";
 import { SkeletonStandingsTable } from "@/components/standings/skeletons/SkeletonStandingsTable";
-
-const categories = [
-  "Categoría Cuarta",
-  "Categoría Quinta",
-  "Categoría Sexta",
-  "Categoría Séptima"
-];
+import { useCategories } from "@/hooks/useCategories";
 
 export default function StandingsPage() {
-  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulamos carga de datos
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const { 
+    categories, 
+    selectedCategory, 
+    loading, 
+    error, 
+    setSelectedCategory 
+  } = useCategories();
 
   // Filtrar los datos según la categoría seleccionada
   const filteredStandings = {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -8,7 +8,15 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
-import { MOCK_USERS } from '@/mocks/users'
+
+interface User {
+  id: string
+  email: string
+  name: string
+  avatar: string
+  role: string
+  status: string
+}
 
 interface TeamInfoStepProps {
   formData: any
@@ -17,9 +25,39 @@ interface TeamInfoStepProps {
 }
 
 export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepProps) {
-  const [selectedPartnerId, setSelectedPartnerId] = useState<number | null>(null)
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/players`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch users')
+        }
+        const data = await response.json()
+        const transformedUsers = data.map((user: any) => ({
+          id: user.id,
+          email: user.email,
+          name: `${user.first_name} ${user.last_name}`,
+          avatar: user.profile_photo || '/assets/user.png',
+          role: user.role || 'user',
+          status: 'active'
+        }))
+        setUsers(transformedUsers)
+      } catch (error) {
+        console.error('Error fetching users:', error)
+        setError('Error al cargar los jugadores')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +67,7 @@ export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepP
       return
     }
 
-    const partner = MOCK_USERS.find(user => user.id === selectedPartnerId)
+    const partner = users.find(user => user.id === selectedPartnerId)
     updateFormData({ 
       partnerId: selectedPartnerId,
       partnerName: partner?.name
@@ -37,9 +75,17 @@ export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepP
     onNext()
   }
 
-  const filteredUsers = MOCK_USERS.filter(user => 
+  const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <p>Cargando jugadores...</p>
+      </div>
+    )
+  }
 
   return (
     <motion.div
@@ -88,7 +134,7 @@ export function TeamInfoStep({ formData, updateFormData, onNext }: TeamInfoStepP
                 </div>
 
                 <Badge variant="secondary">
-                  Categoría {user.category}
+                  Categoría {user.role}
                 </Badge>
               </div>
             ))}
