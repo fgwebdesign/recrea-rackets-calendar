@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -10,6 +11,11 @@ interface Tournament {
   name: string;
   availableSpots: Record<string, number>;
   totalTeams: Record<string, number>;
+}
+
+interface Category {
+  id: string;
+  name: string;
 }
 
 interface CategoryStepProps {
@@ -29,11 +35,51 @@ export function CategoryStep({
   onNext, 
   onBack 
 }: CategoryStepProps) {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        setError('Error al cargar las categorías')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.category) {
       onNext()
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <p>Cargando categorías...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex items-center justify-center text-red-500">
+        <p>{error}</p>
+      </div>
+    )
   }
 
   return (
@@ -53,33 +99,23 @@ export function CategoryStep({
             onValueChange={(value: string) => updateFormData({ category: value })}
             className="grid gap-4"
           >
-            {Object.entries(tournament.availableSpots).map(([category, spots]) => {
-              const isDisabled = spots === 0
-              return (
-                <div key={category}>
-                  <RadioGroupItem
-                    value={category}
-                    id={category}
-                    disabled={isDisabled}
-                    className="peer hidden"
-                  />
-                  <Label
-                    htmlFor={category}
-                    className="flex items-center justify-between p-4 border rounded-lg cursor-pointer peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:ring-1 peer-data-[state=checked]:ring-blue-500 hover:bg-gray-50"
-                  >
-                    <div>
-                      <div className="font-medium">{category}</div>
-                      <div className="text-sm text-gray-500">
-                        {spots} cupos disponibles
-                      </div>
-                    </div>
-                    <div className={`text-sm font-medium ${isDisabled ? 'text-red-500' : 'text-green-500'}`}>
-                      {isDisabled ? 'Completo' : 'Disponible'}
-                    </div>
-                  </Label>
-                </div>
-              )
-            })}
+            {categories.map((category) => (
+              <div key={category.id}>
+                <RadioGroupItem
+                  value={category.name}
+                  id={category.id}
+                  className="peer hidden"
+                />
+                <Label
+                  htmlFor={category.id}
+                  className="flex items-center justify-between p-4 border rounded-lg cursor-pointer peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:ring-1 peer-data-[state=checked]:ring-blue-500 hover:bg-gray-50"
+                >
+                  <div>
+                    <div className="font-medium">{category.name}</div>
+                  </div>
+                </Label>
+              </div>
+            ))}
           </RadioGroup>
         </div>
 
