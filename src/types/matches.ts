@@ -25,25 +25,39 @@ export type Set = {
 }
 
 export interface Team {
+  id: string;
+  name: string;
   players: string[];
-  seed?: number;
 }
 
-export interface Match {
+export interface TournamentMatch {
   id: string;
-  round: string;
-  team1: Team;
-  team2: Team;
-  winner?: number;
-  completed?: boolean;
+  tournament_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  court_id?: string;
+  start_time?: string;
   score?: string;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Round {
   name: string;
-  matches: Match[];
+  matches: TournamentMatch[];
+}
+
+export interface BracketMatch extends TournamentMatch {
+  home_team?: Team;
+  away_team?: Team;
+  round: string;
+  court?: string;
 }
 
 export interface TournamentBracket {
-  rounds: Round[];
+  rounds: {
+    name: string;
+    matches: BracketMatch[];
+  }[];
 }

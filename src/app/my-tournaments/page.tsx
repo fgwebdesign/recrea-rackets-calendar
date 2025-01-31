@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar as CalendarIcon } from 'lucide-react'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app/Sidebar'
 import { PageHeader } from '@/components/ui/page-header'

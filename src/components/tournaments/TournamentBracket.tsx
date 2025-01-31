@@ -1,7 +1,5 @@
 import { useCallback } from 'react';
 import ReactFlow, {
-  Node,
-  Edge,
   ConnectionLineType,
   Panel,
   useNodesState,
@@ -10,6 +8,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { BracketNode } from '@/components/tournaments/BracketNode';
 import { MOCK_TOURNAMENT_BRACKET } from '@/mocks/tournamentBracket';
+import { MOCK_TOURNAMENTS } from '@/mocks/tournaments';
 import { createBracketNodes, createBracketEdges } from '@/utils/bracketUtils';
 
 interface TournamentBracketProps {
@@ -21,6 +20,7 @@ const nodeTypes = {
 };
 
 export function TournamentBracket({ tournamentId }: TournamentBracketProps) {
+  const tournament = MOCK_TOURNAMENTS.find(t => t.id === tournamentId);
   const initialNodes = createBracketNodes(MOCK_TOURNAMENT_BRACKET.rounds);
   const initialEdges = createBracketEdges(MOCK_TOURNAMENT_BRACKET.rounds);
 
@@ -34,7 +34,6 @@ export function TournamentBracket({ tournamentId }: TournamentBracketProps) {
           <ReactFlow
             nodes={nodes}
             edges={edges}
-            onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionLineType={ConnectionLineType.SmoothStep}
@@ -42,12 +41,14 @@ export function TournamentBracket({ tournamentId }: TournamentBracketProps) {
             className="bg-gray-50"
             minZoom={0.5}
             maxZoom={1.5}
-            defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+            defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
           >
             <Panel position="top-right">
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                Layout
-              </button>
+              <div className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md">
+                <span className="text-sm font-medium">
+                  Categoría: {tournament?.categories[0] || 'No especificada'}
+                </span>
+              </div>
             </Panel>
           </ReactFlow>
         </div>
