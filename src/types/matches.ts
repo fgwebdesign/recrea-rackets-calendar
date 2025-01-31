@@ -53,6 +53,7 @@ export interface BracketMatch extends TournamentMatch {
   away_team?: Team;
   round: string;
   court?: string;
+  winner?: string;
 }
 
 export interface TournamentBracket {
