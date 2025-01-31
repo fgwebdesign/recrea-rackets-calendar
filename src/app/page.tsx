@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase";
-import GoogleButton from "../components/GoogleButton";
 import Image from "next/image";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { supabase } from "@/lib/supabase";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function Home() {
   const router = useRouter();
@@ -33,10 +33,28 @@ export default function Home() {
     };
   }, [router]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt with:', formData);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Login successful', data);
+      
+      // Store tokens if admin
+      if (data.user?.user_metadata) {
+        localStorage.setItem('userName', data.user.user_metadata.first_name);
+      }
+      
+      router.push("/dashboard");
+    } else {
+      console.error('Error signing in:', response.statusText);
+    }
   };
 
   return (
@@ -65,7 +83,7 @@ export default function Home() {
               <p className="text-white md:text-gray-800 mb-8">Por favor, inicia sesión en tu cuenta.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleLoginSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium md:text-gray-800 text-white mb-1">
                   Correo electrónico
