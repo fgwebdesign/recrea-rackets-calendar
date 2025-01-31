@@ -27,16 +27,26 @@ import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { MOCK_TOURNAMENTS } from "@/mocks/tournaments"
 
 export function AppSidebar() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  
+  const availableTournaments = MOCK_TOURNAMENTS.filter(t => t.status === "open").length
 
   const links = [
     {
-      title: "Dashboard",
+      title: "Inicio",
       href: "/dashboard",
       icon: LayoutDashboard
+    },
+    {
+      title: "Inscribirme en un Torneo",
+      href: "/tournaments",
+      icon: Trophy,
+      highlight: true,
+      badge: availableTournaments
     },
     {
       title: "Mis Partidos",
@@ -44,8 +54,8 @@ export function AppSidebar() {
       icon: Calendar
     },
     {
-      title: "Torneos",
-      href: "/tournaments",
+      title: "Mis Torneos",
+      href: "/my-tournaments",
       icon: Trophy
     },
     {
@@ -88,10 +98,27 @@ export function AppSidebar() {
           <SidebarMenu>
             {links.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link href={item.href}>
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
+                <SidebarMenuButton 
+                  asChild
+                  className={item.highlight ? 
+                    "bg-green-50 hover:bg-green-100 text-green-700 group font-medium" : 
+                    undefined
+                  }
+                >
+                  <Link href={item.href} className="relative">
+                    <item.icon className={`h-4 w-4 ${
+                      item.highlight ? "text-green-600" : ""
+                    }`} />
+                    <span className={item.highlight ? "text-green-700" : ""}>
+                      {item.title}
+                    </span>
+                    {item.badge && (
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+                        <div className="flex h-5 items-center justify-center rounded-full bg-green-100 px-2.5 text-xs font-medium text-green-700">
+                          {item.badge}
+                        </div>
+                      </div>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

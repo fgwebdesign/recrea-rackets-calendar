@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Match } from "@/mocks/matches"
+import { Match } from '@/types/matches'
 
 interface CancelMatchDialogProps {
   isOpen: boolean

@@ -11,6 +11,7 @@ import { MyBookingsPageSkeleton } from "@/components/skeletons/MyBookingsPageSke
 import { MobileBookingFilters } from '@/components/bookings/MobileBookingFilters'
 import { MatchCard } from '@/components/matches/MatchCard'
 import { MatchTabs } from '@/components/matches/MatchTabs'
+import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Toast } from '@/components/ui/toast'
@@ -79,7 +80,7 @@ export default function MyMatchesPage() {
       try {
         setIsLoading(true)
         const { mockMatches } = await import('@/mocks/matches')
-        setMatches(mockMatches as Match[])
+        setMatches(mockMatches as unknown as Match[])
       } catch (error) {
         console.error('Error fetching matches:', error)
       } finally {
@@ -226,10 +227,14 @@ export default function MyMatchesPage() {
         <AppSidebar />
         <main className="flex-1">
           <div className="flex flex-col h-full">
-            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 pb-24 md:pb-8">
+            <PageHeader
+              title="Mis Partidos"
+              description="Gestiona tus partidos programados, revisa resultados anteriores y mantén un registro de tu actividad."
+              icon={Calendar}
+            />
+
+            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
               <div className="flex items-center justify-between gap-4 mb-8">
-                <h2 className="text-xl font-semibold md:hidden">Mis Partidos</h2>
-                
                 <div className="hidden lg:block relative w-64">
                   <Input
                     type="text"
