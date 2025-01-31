@@ -54,12 +54,27 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
 
       {/* Footer */}
       <div className="p-3 sm:p-4 md:p-5 border-t border-gray-100">
-        <Button 
-          onClick={handleClick}
-          className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white group-hover:scale-[1.02] transition-transform"
-        >
-          Inscribirse <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/tournaments/${tournament.id}/details`)
+            }}
+            variant="outline"
+            className="flex-1 h-8 sm:h-10 text-xs sm:text-sm border-gray-200 hover:bg-gray-50 group-hover:scale-[1.02] transition-transform"
+          >
+            Ver detalles
+          </Button>
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/tournaments/${tournament.id}`)
+            }}
+            className="flex-1 h-8 sm:h-10 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white group-hover:scale-[1.02] transition-transform"
+          >
+            Inscribirse <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </div>
       </div>
     </div>
   )

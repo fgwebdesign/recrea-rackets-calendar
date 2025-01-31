@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Calendar, Home, CircleUser, LandPlot, LogOut, ChevronsUpDown, Trophy, LayoutDashboard, LineChart } from "lucide-react"
+import { Calendar, CircleUser, LogOut, ChevronsUpDown, Trophy, LayoutDashboard, LineChart } from "lucide-react"
 import { User } from '@supabase/supabase-js'
 import {
   Sidebar,
@@ -27,13 +27,28 @@ import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { MOCK_TOURNAMENTS } from "@/mocks/tournaments"
 
 export function AppSidebar() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  const [upcomingTournamentsCount, setUpcomingTournamentsCount] = useState(0)
   
-  const availableTournaments = MOCK_TOURNAMENTS.filter(t => t.status === "open").length
+  const getUpcomingTournamentsCount = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournaments`)
+      const data = await response.json()
+      if (response.ok) {
+        const upcomingCount = data.filter((tournament: any) => tournament.status === 'upcoming').length
+        setUpcomingTournamentsCount(upcomingCount)
+      }
+    } catch (error) {
+      console.error('Error fetching tournaments count:', error)
+    }
+  }
+
+  useEffect(() => {
+    getUpcomingTournamentsCount()
+  }, [])
 
   const links = [
     {
@@ -46,7 +61,7 @@ export function AppSidebar() {
       href: "/tournaments",
       icon: Trophy,
       highlight: true,
-      badge: availableTournaments
+      badge: upcomingTournamentsCount
     },
     {
       title: "Mis Partidos",
