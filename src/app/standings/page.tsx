@@ -9,6 +9,8 @@ import { CategoryFilter } from "@/components/standings/CategoryFilter";
 import { SkeletonCategoryFilter } from "@/components/standings/skeletons/SkeletonCategoryFilter";
 import { SkeletonStandingsTable } from "@/components/standings/skeletons/SkeletonStandingsTable";
 import { useCategories } from "@/hooks/useCategories";
+import { PageHeader } from "@/components/ui/page-header";
+import { LineChart } from "lucide-react";
 
 export default function StandingsPage() {
   const { 
@@ -30,14 +32,13 @@ export default function StandingsPage() {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 overflow-auto bg-[#FAF9F6] pb-16 md:pb-0">
+          <PageHeader
+            title="Tabla de Posiciones"
+            description="Visualiza la tabla de posiciones actualizada de todas las categorías"
+            icon={LineChart}
+          />
+          
           <div className="p-4 md:p-8">
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-800">Tabla de Posiciones</h1>
-              <p className="text-gray-500 mt-1">
-                Visualiza la tabla de posiciones actualizada de todas las categorías
-              </p>
-            </div>
-
             {loading ? (
               <>
                 <SkeletonCategoryFilter />
