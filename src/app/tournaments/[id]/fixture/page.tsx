@@ -5,6 +5,8 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app/Sidebar'
 import { MOCK_TOURNAMENTS } from '@/mocks/tournaments'
 import { TournamentBracket } from '@/components/tournaments/TournamentBracket'
+import { PageHeader } from '@/components/ui/page-header'
+
 export default function TournamentFixturePage() {
   const params = useParams()
   const tournament = MOCK_TOURNAMENTS.find(t => t.id === Number(params.id))
@@ -17,11 +19,12 @@ export default function TournamentFixturePage() {
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-50 w-full">
         <AppSidebar />
-        <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
-              Fixture - {tournament.name}
-            </h1>
+        <main className="flex-1">
+          <PageHeader
+            title={`Fixture - ${tournament.name}`}
+            description="Visualiza el cuadro completo del torneo, los resultados de los partidos y los próximos encuentros."
+          />
+          <div className="px-6">
             <TournamentBracket tournamentId={tournament.id} />
           </div>
         </main>
