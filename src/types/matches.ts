@@ -24,30 +24,26 @@ export type Set = {
   tiebreakScore?: string // "7-5" por ejemplo
 }
 
-export type TournamentMatch = {
-  id: number
-  round: 'R16' | 'QF' | 'SF' | 'F' // Octavos, Cuartos, Semifinal, Final
-  team1: {
-    players: string[]
-    seed?: number
-  }
-  team2: {
-    players: string[]
-    seed?: number
-  }
-  winner?: 1 | 2
-  sets?: Set[]
-  date?: string
-  time?: string
-  court?: string
-  completed?: boolean
+export interface Team {
+  players: string[];
+  seed?: number;
 }
 
-export type TournamentRound = {
-  name: string
-  matches: TournamentMatch[]
+export interface Match {
+  id: string;
+  round: string;
+  team1: Team;
+  team2: Team;
+  winner?: number;
+  completed?: boolean;
+  score?: string;
 }
 
-export type TournamentBracket = {
-  rounds: TournamentRound[]
+export interface Round {
+  name: string;
+  matches: Match[];
+}
+
+export interface TournamentBracket {
+  rounds: Round[];
 }
