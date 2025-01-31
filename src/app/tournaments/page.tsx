@@ -19,6 +19,7 @@ export default function TournamentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const [upcomingTournaments, setUpcomingTournaments] = useState<any[]>([])
 
   useEffect(() => {
     // Simular carga de datos
@@ -60,6 +61,26 @@ export default function TournamentsPage() {
     router.push(`/tournaments/${tournamentId}`)
   }
 
+  const getUpcomingTournaments = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournaments`)
+      const data = await response.json()
+      if (response.ok) {
+        // filter tournaments where data.status is 'upcoming'
+        const upcomingTournaments = data.filter((tournament: any) => tournament.status === 'upcoming')
+        console.log('upcomingTournaments', upcomingTournaments)
+        return upcomingTournaments;
+      } else {
+        throw new Error('Error fetching tournaments')
+      }
+    } catch (error) {
+      console.error('Error fetching tournaments:', error)
+    }
+  }
+
+  useEffect(() => {
+    getUpcomingTournaments().then(data => setUpcomingTournaments(data))
+  }, [])
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-50 w-full">
@@ -107,9 +128,9 @@ export default function TournamentsPage() {
 
                   {/* Contenedor principal que mantiene la estructura */}
                   <div className="mt-6 sm:mt-8">
-                    {filteredTournaments.length > 0 ? (
+                    {upcomingTournaments.length > 0 ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                        {filteredTournaments.map((tournament) => (
+                        {upcomingTournaments.map((tournament) => (
                           <TournamentCard
                             key={tournament.id}
                             tournament={tournament}

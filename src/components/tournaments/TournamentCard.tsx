@@ -9,7 +9,12 @@ import { es } from "date-fns/locale"
 import { useRouter } from "next/navigation"
 
 interface TournamentCardProps {
-  tournament: Tournament
+  tournament: {
+    id: string
+    name: string
+    start_date: string
+    end_date: string
+  }
 }
 
 export function TournamentCard({ tournament }: TournamentCardProps) {
@@ -28,27 +33,21 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
       onClick={handleClick}
       className="group cursor-pointer bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gray-200"
     >
-      {/* Card Content */}
       <div className="p-3 sm:p-4 md:p-5">
-        {/* Header */}
-        <div className="flex justify-between items-start gap-4 mb-3 sm:mb-4">
+        <div className="mb-3 sm:mb-4">
           <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
             {tournament.name}
           </h3>
-          <div className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-sm sm:text-base">
-            ${tournament.price}
-          </div>
         </div>
 
-        {/* Info */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Calendar className="h-4 w-4 text-gray-400" />
-            <span>{formatDate(tournament.startDate)}</span>
+            <span>Inicio: {formatDate(tournament.start_date)}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600 text-sm">
-            <MapPin className="h-4 w-4 text-gray-400" />
-            <span>{tournament.location}</span>
+            <Calendar className="h-4 w-4 text-gray-400" />
+            <span>Fin: {formatDate(tournament.end_date)}</span>
           </div>
         </div>
       </div>
