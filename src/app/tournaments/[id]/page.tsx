@@ -9,100 +9,28 @@ import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useTournament } from "@/hooks/useTournament"
+import { TournamentSkeleton } from "@/components/tournaments/TournamentSkeleton"
+import { TournamentError } from "@/components/tournaments/TournamentError"
 
-interface TournamentInfo {
-  id: string
-  tournament_id: string
-  first_place_prize: string
-  second_place_prize: string
-  third_place_prize: string
-  description: string
-  rules: string
-  tournament_location: string
-  signup_limit_date: string
-  inscription_cost: number
-  sponsors: string
-  tournament_thumbnail: string
-  tournament_address: string
-  tournament_club_name: string
-}
-
-interface Tournament {
-  id: string
-  name: string
-  start_date: string
-  end_date: string
-  status: string
-}
 
 export default function TournamentDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const [tournament, setTournament] = useState<Tournament | null>(null)
-  const [tournamentInfo, setTournamentInfo] = useState<TournamentInfo | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchTournamentData = async () => {
-      try {
-        console.log('Fetching tournament with ID:', params.id)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${params.id}`)
-        
-        if (!response.ok) {
-          throw new Error(`Error fetching tournament: ${response.status}`)
-        }
-        
-        const tournamentData = await response.json()
-        console.log('Tournament Data:', tournamentData)
-
-        if (!tournamentData || !tournamentData.tournament_info) {
-          throw new Error('Tournament not found')
-        }
-
-        // Extraemos la información del torneo y su info detallada
-        const {tournament_info, tournament_teams, ...tournamentDetails} = tournamentData
-        
-        setTournament(tournamentDetails)
-        setTournamentInfo(tournament_info[0])
-        
-        console.log('Processed Tournament:', tournamentDetails)
-        console.log('Processed Tournament Info:', tournament_info[0])
-      } catch (error) {
-        console.error('Error fetching tournament data:', error)
-        setTournament(null)
-        setTournamentInfo(null)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (params.id) {
-      fetchTournamentData()
-    }
-  }, [params.id])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Cargando información del torneo...</div>
-      </div>
-    )
-  }
-
-  if (!tournament || !tournamentInfo) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-red-600">No se pudo encontrar la información del torneo</div>
-      </div>
-    )
-  }
+  const { tournament, tournamentInfo, loading, error } = useTournament(params.id as string)
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "d 'de' MMMM, yyyy", { locale: es })
   }
 
-  // Convertir el string de sponsors a array
+  if (loading) {
+    return <TournamentSkeleton />
+  }
+
+  if (error || !tournament || !tournamentInfo) {
+    return <TournamentError message={error || 'No se pudo encontrar la información del torneo'} />
+  }
+
   const sponsorsList = tournamentInfo.sponsors ? JSON.parse(tournamentInfo.sponsors) : []
 
   return (
@@ -214,7 +142,7 @@ export default function TournamentDetailPage() {
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
                   <h2 className="text-xl font-semibold mb-4">Reglamento</h2>
                   <div className="space-y-2">
-                    {tournamentInfo.rules.split('\n').map((rule, index) => (
+                    {tournamentInfo.rules.split('\n').map((rule: string, index: number) => (
                       <div key={index} className="flex gap-2 text-gray-600">
                         <span className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-2 shrink-0" />
                         {rule}
