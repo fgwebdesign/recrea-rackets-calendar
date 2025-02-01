@@ -1,47 +1,67 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/Sidebar";
 import { WeatherWidget } from "@/components/dashboard/WeatherWidget"; 
-import { supabase } from '@/lib/supabase';
-import { User } from "@supabase/supabase-js";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { Skeleton } from "@/components/ui/skeleton";
+import { LastMatchResult } from "@/components/dashboard/LastMatchResult";
+import { NextMatch } from "@/components/dashboard/NextMatch";
 import { SkeletonWelcomeBanner } from "@/components/dashboard/skeletons/SkeletonWelcomeBanner";
 import { SkeletonQuickActions } from "@/components/dashboard/skeletons/SkeletonQuickActions";
-import { TournamentBanner } from "@/components/dashboard/TournamentBanner"
-import { LastMatchResult } from "@/components/dashboard/LastMatchResult";
-import { LeagueStandings } from "@/components/dashboard/LeagueStandings";
-import { mockLeagueStandings } from '@/mocks/leagueStandings';
-import { NextMatch } from "@/components/dashboard/NextMatch";
+import { TournamentBanner } from "@/components/dashboard/TournamentBanner";
+import { SkeletonTournamentBanner } from "@/components/dashboard/skeletons/SkeletonTournamentBanner";
 import { SkeletonLastMatchResult } from "@/components/dashboard/skeletons/SkeletonLastMatchResult";
 import { SkeletonNextMatch } from "@/components/dashboard/skeletons/SkeletonNextMatch";
-import { SkeletonTournamentBanner } from "@/components/dashboard/skeletons/SkeletonTournamentBanner";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "@/components/ErrorFallback";
+
+interface Tournament {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  location?: string;
+  description?: string;
+  status: 'upcoming' | 'in_progress' | 'finished';
+}
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTournaments = async () => {
       try {
-        const userData = await supabase.auth.getUser();
+        setError(null);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournaments`);
         
-        if (userData.data.user) {
-          setUser(userData.data.user);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        const upcomingTournaments = data.filter(
+          (tournament: Tournament) => tournament.status === 'upcoming'
+        );
+        console.log('Upcoming tournaments:', upcomingTournaments);
+        setTournaments(upcomingTournaments);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching tournaments:', error);
+        setError(error instanceof Error ? error.message : 'An error occurred');
       } finally {
-        setTimeout(() => setLoading(false), 1000);
+        setLoading(false);
       }
     };
     
-    fetchData();
+    fetchTournaments();
+
+    return () => {
+      setTournaments([]);
+      setError(null);
+    };
   }, []);
 
   return (
@@ -50,75 +70,46 @@ export default function DashboardPage() {
         <AppSidebar />
         <main className="flex-1 overflow-auto bg-[#FAF9F6] pb-16 md:pb-0">
           <div className="p-4 md:p-8 w-full">
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                {error}
+              </div>
+            )}
+            
             {loading ? (
               <>
                 <SkeletonWelcomeBanner />
                 <SkeletonQuickActions />
                 <SkeletonTournamentBanner />
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="h-full flex flex-col">
-                    <Skeleton className="h-8 w-48 mb-4" />
-                    <SkeletonLastMatchResult />
-                  </div>
-                  <div className="h-full flex flex-col">
-                    <Skeleton className="h-8 w-48 mb-4" />
-                    <SkeletonNextMatch />
-                  </div>
-                </div>
-
-                <div className="w-full">
-                  <Skeleton className="h-[400px] rounded-2xl" />
+                  <SkeletonLastMatchResult />
+                  <SkeletonNextMatch />
                 </div>
               </>
             ) : (
-              <>
+              <ErrorBoundary fallback={<ErrorFallback />}>
                 <WelcomeBanner 
-                  userName={`${user?.user_metadata?.name || user?.user_metadata?.full_name || ''}`}
-                  notificationCount={3}
-                  avatarUrl={user?.user_metadata?.avatar_url}
-                  email={user?.email}
+                  userName="Usuario"
+                  notificationCount={0}
+                  email=""
                 />
                 <QuickActions />
                 
-                <TournamentBanner />
+                {tournaments.length > 0 && (
+                  <Suspense fallback={<SkeletonTournamentBanner />}>
+                    <TournamentBanner tournaments={tournaments} />
+                  </Suspense>
+                )}
 
-                {/* Grid para LastMatchResult y NextMatch con altura igual */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="h-full flex flex-col">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                      Último partido disputado
-                    </h2>
-                    <div className="flex-1">
-                      <LastMatchResult hasMatch={false} />
-                    </div>
-                  </div>
-                  <div className="h-full flex flex-col">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                      Próximo Partido
-                    </h2>
-                    <div className="flex-1">
-                      <NextMatch hasMatch={false} />
-                    </div>
-                  </div>
+                  <LastMatchResult hasMatch={false} />
+                  <NextMatch hasMatch={false} />
                 </div>
 
-                {/* Tabla de posiciones */}
                 <div>
-                  <LeagueStandings 
-                    category={mockLeagueStandings.category}
-                    division={mockLeagueStandings.division}
-                    standings={[]}
-                    showViewAllButton={true}
-                  />
+                  <WeatherWidget />
                 </div>
-                   {/* WeatherWidget en una fila completa */}
-                   <div className="mb-8 mt-6">
-                  <div className="bg-white rounded-xl shadow-sm p-6">
-                    <WeatherWidget />
-                  </div>
-                </div>
-              </>
+              </ErrorBoundary>
             )}
           </div>
         </main>

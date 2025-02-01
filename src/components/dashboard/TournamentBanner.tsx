@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Trophy, Calendar, MapPin, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
-import { MOCK_TOURNAMENTS } from '@/mocks/tournaments'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import Image from 'next/image'
@@ -12,20 +11,23 @@ import { cn } from '@/lib/utils'
 import useEmblaCarousel from 'embla-carousel-react'
 import AutoPlay from 'embla-carousel-autoplay'
 
-export function TournamentBanner() {
+interface TournamentBannerProps {
+  tournaments: Tournament[]
+}
+
+interface Tournament {
+  id: string
+  name: string
+  start_date: string
+  end_date: string
+  location?: string
+  description?: string
+  status: 'upcoming' | 'in_progress' | 'finished'
+}
+
+export function TournamentBanner({ tournaments }: TournamentBannerProps) {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
-  
-  // Asegúrate de que siempre haya al menos 3 torneos
-  const upcomingTournaments = MOCK_TOURNAMENTS
-    .filter(t => new Date(t.startDate) > new Date())
-    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-    .slice(0, 3)
-
-  // Si no hay suficientes torneos futuros, usa los primeros torneos disponibles
-  const tournamentsToShow = upcomingTournaments.length >= 3 
-    ? upcomingTournaments 
-    : [...upcomingTournaments, ...MOCK_TOURNAMENTS.slice(0, 3 - upcomingTournaments.length)]
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: 'start' },
@@ -48,7 +50,7 @@ export function TournamentBanner() {
     router.push(`/tournaments/${tournamentId}`)
   }
 
-  if (tournamentsToShow.length === 0) return null
+  if (!tournaments || tournaments.length === 0) return null;
 
   return (
     <div className={cn(
@@ -57,7 +59,7 @@ export function TournamentBanner() {
     )}>
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
-          {tournamentsToShow.map((tournament) => (
+          {tournaments.map((tournament) => (
             <div key={tournament.id} className="relative flex-[0_0_100%] min-w-0 embla__slide transform transition-transform duration-500">
               {/* Fondo con gradiente y overlay */}
               <div className="absolute inset-0">
@@ -88,24 +90,28 @@ export function TournamentBanner() {
                     <div className="flex items-center text-white/90 text-xs sm:text-sm">
                       <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
                       <span>
-                        {formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}
+                        {formatDate(tournament.start_date)} - {formatDate(tournament.end_date)}
                       </span>
                     </div>
-                    <div className="flex items-center text-white/90 text-xs sm:text-sm">
-                      <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
-                      <span>{tournament.location}</span>
-                    </div>
+                    {tournament.location && (
+                      <div className="flex items-center text-white/90 text-xs sm:text-sm">
+                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                        <span>{tournament.location}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transform transition-all duration-500 delay-400">
-                  <p className="text-white/90 text-xs sm:text-sm max-w-2xl line-clamp-2 hidden sm:block">
-                    {tournament.description}
-                  </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  {tournament.description && (
+                    <p className="text-white/90 text-xs sm:text-sm max-w-2xl line-clamp-2 hidden sm:block">
+                      {tournament.description}
+                    </p>
+                  )}
 
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white group shadow-lg border-0 transition-all duration-300 hover:scale-105"
-                    onClick={() => handleViewDetails(tournament.id.toString())}
+                    onClick={() => handleViewDetails(tournament.id)}
                   >
                     Ver detalles
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
