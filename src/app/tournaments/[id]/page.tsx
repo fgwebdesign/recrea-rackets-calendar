@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { Trophy, MapPin, Calendar, ChevronLeft, Car, Info, Medal, ArrowRight, AlertCircle } from "lucide-react"
+import { Trophy, MapPin, Calendar, ChevronLeft, Medal, ArrowRight, AlertCircle, Download } from "lucide-react"
 import { AppSidebar } from "@/components/app/Sidebar"
 import { BottomNav } from "@/components/navigation/BottomNav"
 import { SidebarProvider } from "@/components/ui/sidebar"
@@ -12,12 +12,13 @@ import Image from "next/image"
 import { useTournament } from "@/hooks/useTournament"
 import { TournamentSkeleton } from "@/components/tournaments/TournamentSkeleton"
 import { TournamentError } from "@/components/tournaments/TournamentError"
+import { generateRulesPDF } from "@/utils/pdfUtils"
 
 
 export default function TournamentDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { tournament, tournamentInfo, loading, error } = useTournament(params.id as string)
+  const { tournament, tournamentInfo, sponsors, loading, error } = useTournament(params.id as string)
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "d 'de' MMMM, yyyy", { locale: es })
@@ -30,8 +31,6 @@ export default function TournamentDetailPage() {
   if (error || !tournament || !tournamentInfo) {
     return <TournamentError message={error || 'No se pudo encontrar la información del torneo'} />
   }
-
-  const sponsorsList = tournamentInfo.sponsors ? JSON.parse(tournamentInfo.sponsors) : []
 
   return (
     <SidebarProvider>
@@ -67,16 +66,21 @@ export default function TournamentDetailPage() {
                 </div>
 
                 {/* Sponsors */}
-                {sponsorsList.length > 0 && (
+                {sponsors.length > 0 && (
                   <div className="hidden md:block">
                     <div className="flex flex-col items-end gap-2">
                       <span className="text-white/80 text-sm font-medium">
                         Patrocinado por
                       </span>
                       <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl">
-                        {sponsorsList.map((sponsor: string, index: number) => (
-                          <div key={index} className="text-white">
-                            {sponsor}
+                        {sponsors.map((sponsor) => (
+                          <div key={sponsor.id} className="relative h-8 w-24">
+                            <Image
+                              src={sponsor.logo_url}
+                              alt={sponsor.name}
+                              fill
+                              className="object-contain"
+                            />
                           </div>
                         ))}
                       </div>
@@ -140,7 +144,18 @@ export default function TournamentDetailPage() {
 
                 {/* Reglamento */}
                 <section className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold mb-4">Reglamento</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">Reglamento</h2>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={() => generateRulesPDF(tournament.name, tournamentInfo.rules)}
+                    >
+                      <Download className="w-4 h-4" />
+                      Descargar PDF
+                    </Button>
+                  </div>
                   <div className="space-y-2">
                     {tournamentInfo.rules.split('\n').map((rule: string, index: number) => (
                       <div key={index} className="flex gap-2 text-gray-600">

@@ -24,4 +24,10 @@ export interface TournamentInfo {
   tournament_thumbnail: string
   tournament_address: string
   tournament_club_name: string
+}
+
+export interface Sponsor {
+  id: string
+  name: string
+  logo_url: string
 } 
