@@ -1,9 +1,7 @@
 "use client"
 
-import { Trophy, Users, ChevronRight, Calendar, MapPin } from "lucide-react"
+import {  ChevronRight, Calendar } from "lucide-react"  
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { Tournament } from "@/types/tournament"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { useRouter } from "next/navigation"
@@ -20,19 +18,14 @@ interface TournamentCardProps {
 export function TournamentCard({ tournament }: TournamentCardProps) {
   const router = useRouter()
   
-  const handleClick = () => {
-    router.push(`/tournaments/${tournament.id}`)
-  }
-
+  console.log('Tournament in card:', tournament)
+  
   const formatDate = (date: string) => {
     return format(new Date(date), "d 'de' MMMM, yyyy", { locale: es })
   }
 
   return (
-    <div 
-      onClick={handleClick}
-      className="group cursor-pointer bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gray-200"
-    >
+    <div className="group cursor-pointer bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gray-200">
       <div className="p-3 sm:p-4 md:p-5">
         <div className="mb-3 sm:mb-4">
           <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
@@ -52,14 +45,29 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="p-3 sm:p-4 md:p-5 border-t border-gray-100">
-        <Button 
-          onClick={handleClick}
-          className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white group-hover:scale-[1.02] transition-transform"
-        >
-          Inscribirse <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Navigating to tournament:', tournament.id)
+              router.push(`/tournaments/${tournament.id}`)
+            }}
+            variant="outline"
+            className="flex-1 h-8 sm:h-10 text-xs sm:text-sm border-gray-200 hover:bg-gray-50 group-hover:scale-[1.02] transition-transform"
+          >
+            Ver detalles
+          </Button>
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/tournaments/${tournament.id}/register`)
+            }}
+            className="flex-1 h-8 sm:h-10 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white group-hover:scale-[1.02] transition-transform"
+          >
+            Inscribirse <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </div>
       </div>
     </div>
   )
