@@ -16,7 +16,7 @@ import { SkeletonLastMatchResult } from "@/components/dashboard/skeletons/Skelet
 import { SkeletonNextMatch } from "@/components/dashboard/skeletons/SkeletonNextMatch";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/components/ErrorFallback";
-
+import SponsorsBanner from "@/components/dashboard/SponsorsBanner";
 interface Tournament {
   id: string;
   name: string;
@@ -109,6 +109,7 @@ export default function DashboardPage() {
                 <div>
                   <WeatherWidget />
                 </div>
+                <SponsorsBanner />
               </ErrorBoundary>
             )}
           </div>
