@@ -17,6 +17,7 @@ import { SkeletonNextMatch } from "@/components/dashboard/skeletons/SkeletonNext
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/components/ErrorFallback";
 import SponsorsBanner from "@/components/dashboard/SponsorsBanner";
+
 interface Tournament {
   id: string;
   name: string;
