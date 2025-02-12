@@ -21,7 +21,7 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
   const router = useRouter()
   
   const handleClick = () => {
-    router.push(`/tournaments/${tournament.id}`)
+    router.push(`/tournaments/${tournament.id}/register`)
   }
 
   const formatDate = (date: string) => {
