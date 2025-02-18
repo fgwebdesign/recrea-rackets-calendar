@@ -1,0 +1,165 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Trophy } from "lucide-react"
+import { AppSidebar } from "@/components/app/Sidebar"
+import { BottomNav } from "@/components/navigation/BottomNav"
+import { TournamentCard } from "@/components/tournaments/TournamentCard"
+import { TournamentFilters } from "@/components/tournaments/TournamentFilters"
+import { DateRange } from "react-day-picker"
+import { isWithinInterval, parseISO } from "date-fns"
+import { useRouter } from "next/navigation"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { SkeletonTournamentsPage } from "@/components/tournaments/skeletons/SkeletonTournamentsPage"
+
+export default function TournamentsPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const [upcomingTournaments, setUpcomingTournaments] = useState<any[]>([])
+
+  useEffect(() => {
+    // Simular carga de datos
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const filteredTournaments = upcomingTournaments.filter(tournament => {
+    // Filtro por búsqueda
+    const matchesSearch = tournament.name.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    // Filtro por categoría
+    const matchesCategory = !selectedCategory || tournament.categories.includes(selectedCategory)
+    
+    // Filtro por fecha
+    let matchesDate = true
+    if (dateRange?.from && dateRange?.to) {
+      const tournamentStart = parseISO(tournament.startDate)
+      const tournamentEnd = parseISO(tournament.endDate)
+      
+      matchesDate = (
+        isWithinInterval(tournamentStart, { start: dateRange.from, end: dateRange.to }) ||
+        isWithinInterval(tournamentEnd, { start: dateRange.from, end: dateRange.to }) ||
+        (tournamentStart <= dateRange.from && tournamentEnd >= dateRange.to)
+      )
+    }
+
+    return matchesSearch && matchesCategory && matchesDate
+  })
+
+  const allCategories = Array.from(
+    new Set(upcomingTournaments.flatMap(t => t.categories))
+  )
+
+  const handleTournamentSelect = (tournamentId: number) => {
+    router.push(`/tournaments/${tournamentId}`)
+  }
+
+  const getUpcomingTournaments = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournaments`)
+      const data = await response.json()
+      if (response.ok) {
+        // filter tournaments where data.status is 'upcoming'
+        const upcomingTournaments = data.filter((tournament: any) => tournament.status === 'upcoming')
+        console.log('upcomingTournaments', upcomingTournaments)
+        return upcomingTournaments;
+      } else {
+        throw new Error('Error fetching tournaments')
+      }
+    } catch (error) {
+      console.error('Error fetching tournaments:', error)
+    }
+  }
+
+  useEffect(() => {
+    getUpcomingTournaments().then(data => setUpcomingTournaments(data))
+  }, [])
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-gray-50 w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-x-hidden w-full">
+          {loading ? (
+            <SkeletonTournamentsPage />
+          ) : (
+            <div className="flex flex-col min-h-full w-full">
+              {/* Header Banner con gradiente moderno */}
+              <div className="relative w-full bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600">
+                {/* Efectos de fondo */}
+                <div className="absolute inset-0 bg-[linear-gradient(40deg,#0000_40%,#fff2_70%,#0000)] opacity-20"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,#fff3_0%,#0000_50%)] opacity-40"></div>
+                
+                {/* Contenido */}
+                <div className="relative px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="p-2 sm:p-2.5 bg-white/10 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                      <Trophy className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
+                    </div>
+                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      Torneos Disponibles
+                    </h1>
+                  </div>
+                  <p className="text-white/90 text-sm sm:text-base max-w-2xl">
+                    Explora y participa en los mejores torneos de pádel. Encuentra el torneo perfecto para tu nivel y únete a la competición.
+                  </p>
+                </div>
+              </div>
+
+              {/* Content Area */}
+              <div className="flex-1 w-full px-4 py-6 sm:px-6 md:px-8">
+                <div className="w-full">
+                  {/* Filtros */}
+                  <TournamentFilters
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
+                    categories={allCategories}
+                  />
+
+                  {/* Contenedor principal que mantiene la estructura */}
+                  <div className="mt-6 sm:mt-8">
+                    {upcomingTournaments.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        {upcomingTournaments.map((tournament) => (
+                          <TournamentCard
+                            key={tournament.id}
+                            tournament={tournament}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-8 sm:p-10 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                            <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-blue-500" />
+                          </div>
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                            No se encontraron torneos
+                          </h3>
+                          <p className="text-gray-500 text-sm sm:text-base max-w-md">
+                            No hay torneos que coincidan con tus criterios de búsqueda.
+                            Intenta ajustar los filtros para ver más resultados.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+        <BottomNav />
+      </div>
+    </SidebarProvider>
+  )
+} 
